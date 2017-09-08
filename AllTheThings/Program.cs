@@ -8,6 +8,7 @@ using RGiesecke.DllExport;
 
 /*
 Author: Casey Smith, Twitter: @subTee
+Modified by Chris Spehn, Twitter: @ConsciousHacker
 License: BSD 3-Clause
 
 For Testing Binary Application Whitelisting Controls
