@@ -1,5 +1,7 @@
 # AllTheThings
 
+Modified version of @subtee's AllTheThings to execute shellcode.
+
 ###Includes 5 Known Application Whitelisting Bypass Techniques in One File.
 
 ###1. InstallUtil.exe
